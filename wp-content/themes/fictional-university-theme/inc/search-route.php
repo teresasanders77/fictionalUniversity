@@ -43,17 +43,39 @@ function universitySearchResults($data) {
         ));
         }
 
-        if (get_post_type() == 'program'){
-            array_push($results['programs'], array(
+        if (get_post_type() == 'program') {
+ 
+            $relatedProfessors = get_posts([
+                'post_type' =>  'professor',
+                'meta_query' => array(
+                    array(
+                        'key' => 'related_programs',
+                        'compare' => 'LIKE',
+                        'value' => '"' . get_the_ID() . '"'
+                    )
+                )
+            ]);
+
+            if ($relatedProfessors) {
+                foreach ($relatedProfessors as $professor) {
+                    array_push($results['professors'], [
+                        'link' => get_the_permalink($professor),
+                        'title' => get_the_title($professor),
+                        'image' => get_the_post_thumbnail_url($professor, 'professorLandscape'),
+                    ]);
+                }
+            }
+
+            array_push($results['programs'], [
+                'link' => get_the_permalink(),
                 'title' => get_the_title(),
-                'permalink' => get_the_permalink()
-        ));
+            ]);
         }
 
         if (get_post_type() == 'campus'){
             array_push($results['campuses'], array(
                 'title' => get_the_title(),
-                'permalink' => get_the_permalink()
+                'permalink' => get_the_permalink(),
         ));
         }
 
@@ -76,29 +98,37 @@ function universitySearchResults($data) {
         }
     }
 
-    $programRelationshipQuery = new WP_Query(array(
-        'post_type' => 'professor',
-        'meta_query' => array(
-            array(
-                'key' => 'related_programs',
+    if ($results['programs']) {
+        $programsMetaQuery = array('relation' => 'OR');
+
+        foreach($results['programs'] as $item) {
+            array_push($programsMetaQuery, array(
+                'key' => 'related_programs_',
                 'compare' => 'LIKE',
-                'value' => '"51"'
-        ))
-    ));
-
-    while ($programRelationshipQuery->have_posts()) {
-        $programRelationshipQuery-> the_post();
-
-        if (get_post_type() == 'professor'){
-            array_push($results['professors'], array(
-                'title' => get_the_title(),
-                'permalink' => get_the_permalink(),
-                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
-        ));
+                'value' => '"' . $item['id'] . '"'
+            )); 
         }
+
+        $programRelationshipQuery = new WP_Query(array(
+            'post_type' => 'professor',
+            'meta_query' => $programsMetaQuery
+        ));
+
+        while ($programRelationshipQuery->have_posts()) {
+            $programRelationshipQuery->the_post();
+            if (get_post_type() == 'professor') {
+                array_push($results['professors'], array(
+                    'title' => get_the_title(),
+                    'permalink' => get_the_permalink(),
+                    'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
+            ));
+            }
+        }
+
+        $results['professors'] = array_values(array_unique($results['professors'], SORT_REGULAR));
     }
 
-    $results['professors'] = array_values(array_unique($results['professors'], SORT_REGULAR));
+    
 
     return $results; 
 }
