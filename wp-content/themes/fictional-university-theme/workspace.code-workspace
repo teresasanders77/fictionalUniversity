@@ -1,11 +1,14 @@
 {
-  "folders": [
-	{
-		"path": "."
-	},
-	{
-		"path": "../../mu-plugins"
-	}
-],
-  "settings": {}
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../../mu-plugins"
+        },
+        {
+            "path": "../../plugins/my-first-amazing-plugin"
+        }
+    ],
+    "settings": {}
 }
