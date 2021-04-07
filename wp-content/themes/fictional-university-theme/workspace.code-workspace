@@ -8,6 +8,9 @@
         },
         {
             "path": "../../plugins/my-first-amazing-plugin"
+        },
+        {
+            "path": "../../plugins/my-cool-border-box"
         }
     ],
     "settings": {}
