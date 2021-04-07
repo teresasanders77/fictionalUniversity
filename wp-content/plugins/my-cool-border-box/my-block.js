@@ -17,7 +17,12 @@ wp.blocks.registerBlockType("teresa/border-box", {
         return React.createElement(
             "div",
             null,
-            /*#__PURE__*/ React.createElement("h3", null, "Your Cool Border Box"),
+            /*#__PURE__*/ React.createElement(
+                "h3",
+                { style: { border: "5px solid " + props.attributes.color } },
+                "Preview: ",
+                props.attributes.content
+            ),
             /*#__PURE__*/ React.createElement("input", {
                 type: "text",
                 value: props.attributes.content,
